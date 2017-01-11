@@ -17,5 +17,7 @@ class TwitterAPI
 	def get_recent
 		tweet = @client.search(@hashtag, result_type: 'recent').take(10).sample
 		return "#{tweet.user.screen_name}: #{tweet.text}"
+	rescue
+		return "Not found"
 	end
 end

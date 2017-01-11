@@ -57,7 +57,7 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) do |bot|
 			end
 		rescue => e
 			mutex.synchronize { sends << ['154857742', e] }
-		end if (message.text[0] == '/' and message.text.length > 3) if message != nil
+		end if (message.text[0] == '/' and message.text.length > 3) if message.text != nil if message != nil
 	end
 
 end

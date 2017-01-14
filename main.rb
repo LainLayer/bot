@@ -3,6 +3,7 @@ Dir['src/*.rb'].each { |file| require_relative file }
 DEBUG = true
 TALK = true
 mutex = Mutex.new
+ph = Mutex.new
 commands = Hash.new
 Dir['commands/*'].each { |filename| commands[filename.split('/').last.split('.').first] = File.read(filename) }
 if !File.exists?('data/public_hash.json') or File.read('data/public_hash.json').length < 2
@@ -26,7 +27,7 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) do |bot|
 		loop do
 			a = gets.strip
 			next if a[-1] == '%'
-			mutex.synchronize { sends << ['@AnimuAndManga', a] }
+			mutex.synchronize { sends << ['@WhitesOnlyLounge', a] }
 		end
 	end if TALK
 	Thread.new do
@@ -43,9 +44,10 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) do |bot|
 	end
 	puts 'BOT ON'
 	bot.listen do |message|
+		ph.synchronize {
 		begin
 			command, args = to_command(message.text)
-			puts "<#{message.from.first_name}>/#{command.to_s} #{args.to_s}" if DEBUG
+			puts "<#{(message.from.username == nil ? message.from.first_name : message.from.username)}>/#{command.to_s} #{args.to_s}" if DEBUG
 			cmd = commands[command.gsub('@RecursiveBot','').downcase]
 			if cmd != nil
 				begin
@@ -58,7 +60,8 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) do |bot|
 		rescue => e
 			mutex.synchronize { sends << ['154857742', e] }
 		end if (message.text[0] == '/' and message.text.length > 3) if message.text != nil if message != nil
+		}
 	end
 
-end
+end rescue Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) { |bot| bot.api.send_message(chat_id: '154857742', text: 'Bot is dead')  }
 

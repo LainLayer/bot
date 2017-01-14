@@ -22,7 +22,7 @@ def to_command(text)
 	return command, a
 end
 
-Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) do |bot|
+Telegram::Bot::Client.run(File.read('token').strip, timeout: 1, logger: CustLog.new) do |bot|
 	Thread.new do
 		loop do
 			a = gets.strip
@@ -47,7 +47,6 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) do |bot|
 		ph.synchronize {
 		begin
 			command, args = to_command(message.text)
-			puts "<#{(message.from.username == nil ? message.from.first_name : message.from.username)}>/#{command.to_s} #{args.to_s}" if DEBUG
 			cmd = commands[command.gsub('@RecursiveBot','').downcase]
 			if cmd != nil
 				begin

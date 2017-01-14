@@ -4,3 +4,4 @@ fourchan/kit
 mechanize
 set
 twitter
+colorize

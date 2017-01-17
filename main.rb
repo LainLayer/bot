@@ -44,13 +44,12 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1, logger: CustLog.
 	end
 	puts 'BOT ON'
 	bot.listen do |message|
-		ph.synchronize {
 		begin
 			command, args = to_command(message.text)
 			cmd = commands[command.gsub('@RecursiveBot','').downcase]
 			if cmd != nil
 				begin
-					eval cmd
+					ph.synchronize { eval(cmd) }
 				rescue => e
 					mutex.synchronize { sends << ['154857742', e]  }
 				end
@@ -59,7 +58,6 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1, logger: CustLog.
 		rescue => e
 			mutex.synchronize { sends << ['154857742', e] }
 		end if (message.text[0] == '/' and message.text.length > 3) if message.text != nil if message != nil
-		}
 	end
 
 end rescue Telegram::Bot::Client.run(File.read('token').strip, timeout: 1) { |bot| bot.api.send_message(chat_id: '154857742', text: 'Bot is dead')  }

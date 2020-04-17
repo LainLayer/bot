@@ -27,7 +27,7 @@ Telegram::Bot::Client.run(File.read('token').strip, timeout: 1, logger: CustLog.
 		loop do
 			a = gets.strip
 			next if a[-1] == '%'
-			mutex.synchronize { sends << ['@WhitesOnlyLounge', a] }
+			mutex.synchronize { sends << ['<chat handle>', a] }
 		end
 	end if TALK
 	Thread.new do
